@@ -1,0 +1,13 @@
+{
+  "swaggerDefinition": {
+    "info": {
+      "title": "Simmple Typescript Express Boilerplate",
+      "description": "Retrieve Vehicles and their locations for given cities",
+      "contact": {
+        "name": "Samuel Ngwarai"
+      },
+      "servers": ["http://localhost:3001"]
+    }
+  },
+  "apis": ["**/*.ts"]
+}

@@ -1,0 +1,18 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "prettier"
+  ],
+  "plugins": ["@typescript-eslint"],
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "rules": {
+      "quotes": ["error", "single"],
+      "indent": ["error", 2],
+      "object-curly-spacing": ["error", "always"],
+      "no-trailing-spaces": "error",
+      "semi": ["error", "always"]
+  }
+}
