@@ -10,7 +10,7 @@
   },
   "rules": {
       "quotes": ["error", "single"],
-      "indent": ["error", 2],
+      "indent": ["error", 4],
       "object-curly-spacing": ["error", "always"],
       "no-trailing-spaces": "error",
       "semi": ["error", "always"]

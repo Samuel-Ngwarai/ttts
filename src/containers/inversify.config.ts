@@ -3,7 +3,8 @@ import { Container } from 'inversify';
 import { TYPES } from './types';
 import { MySimpleUsecaseInterface } from '../usecases/interfaces/Imy-simple-usecase';
 import { MySimpleUsecase } from '../usecases/my-simple-usecase';
-import { SomeController } from '../controllers/some-controller';
+import { GameController } from '../controllers/game-controller';
+import { CacheService } from '../services/cache-service';
 
 
 let _appContainer: Container;
@@ -16,7 +17,10 @@ const initializeAppContainer = () => {
   _appContainer = new Container();
 
   _appContainer.bind<MySimpleUsecaseInterface>(TYPES.MySimpleUsecaseInterface).to(MySimpleUsecase);
-  _appContainer.bind<SomeController>(TYPES.SomeController).to(SomeController).inSingletonScope();
+  _appContainer.bind<GameController>(TYPES.GameController).to(GameController).inSingletonScope();
+
+  const cacheService = new CacheService();
+  _appContainer.bind<CacheService>(TYPES.CacheService).toConstantValue(cacheService);
 };
 
 const appContainer = () => {
@@ -25,8 +29,9 @@ const appContainer = () => {
   }
 
   return {
-    someController: _appContainer.get<SomeController>(TYPES.SomeController),
+    gameController: _appContainer.get<GameController>(TYPES.GameController),
     mySimpleUsecase: _appContainer.get<MySimpleUsecaseInterface>(TYPES.MySimpleUsecaseInterface),
+    cacheService: _appContainer.get<CacheService>(TYPES.CacheService),
   };
 };
 

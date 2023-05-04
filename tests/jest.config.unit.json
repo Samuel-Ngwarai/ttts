@@ -20,9 +20,11 @@
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/utils/logger.ts",
+      "!src/main.ts",
       "!src/**/__tests__/**",
       "!src/config/**.ts",
       "!src/routes/**.ts",
+      "!src/server/**.ts",
       "!src/containers/*.ts"
     ],
   "errorOnDeprecated": true,

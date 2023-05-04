@@ -1,6 +1,7 @@
 const TYPES = {
   MySimpleUsecaseInterface: Symbol.for('MySimpleUsecaseInterface'),
-  SomeController: Symbol.for('SomeController'),
+  GameController: Symbol.for('GameController'),
+  CacheService: Symbol.for('CacheService'),
 };
 
 export { TYPES };

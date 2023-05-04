@@ -20,6 +20,7 @@
     "node-cache": "^5.1.2",
     "point-in-polygon": "^1.1.0",
     "reflect-metadata": "^0.1.13",
+    "socket.io": "^4.6.1",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
     "uuid": "^9.0.0",
@@ -43,7 +44,7 @@
     "supertest": "^6.3.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.2",
-    "ts-jest": "^29.0.5",
+    "ts-jest": "^29.1.0",
     "tsutils": "^3.21.0",
     "typescript": "^5.0.2"
   },
@@ -63,5 +64,9 @@
     "test:watch": "npm run test:unit -- --watch"
   },
   "author": "Samuel Ngwarai",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "optionalDependencies": {
+    "bufferutil": "^4.0.7",
+    "utf-8-validate": "^5.0.10"
+  }
 }
