@@ -1,14 +1,14 @@
 import { Express, Request, Response } from 'express';
-import { SomeController } from '../controllers/some-controller';
-import { appContainer } from '../containers/inversify.config';
+import { GameController } from '../controllers/game-controller';
+// import { appContainer } from '../containers/inversify.config';
 
 import { IRoute } from './routes-i';
 
 export class Routes implements IRoute {
   constructor() {}
 
-  public register(app: Express, _?: SomeController): void {
-    const someController = appContainer().someController;
+  public register(app: Express, _?: GameController): void {
+    // const gameController = appContainer().gameController;
 
     app.get('/', async (_: Request, res: Response) => {
       res.status(404).send('Unknown route called. Try "/simple" for example');
@@ -34,7 +34,7 @@ export class Routes implements IRoute {
      *       200:
      *         description: Successfull Response
      */
-    app.get('/simple', someController.doSomethingSimple.bind(someController));
+    // app.get('/simple', gameController.doSomethingSimple.bind(gameController));
 
     app.get('*',function (_: Request, res: Response) {
       res.status(404).send('Uknown route called. Try "/simple" for example');

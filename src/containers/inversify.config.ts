@@ -1,9 +1,11 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import { TYPES } from './types';
-import { MySimpleUsecaseInterface } from '../usecases/interfaces/Imy-simple-usecase';
-import { MySimpleUsecase } from '../usecases/my-simple-usecase';
-import { SomeController } from '../controllers/some-controller';
+import { GameController } from '../controllers/game-controller';
+import { IUpdateBoardUsecase } from '../usecases/interfaces/IUpdate-board';
+import { UpdateBoardUsecase } from '../usecases/update-board-usecase';
+import { CacheService } from '../services/cache-service';
+import { ICacheService } from '../services/interfaces/Icache-service';
 
 
 let _appContainer: Container;
@@ -15,8 +17,11 @@ const initializeAppContainer = () => {
   }
   _appContainer = new Container();
 
-  _appContainer.bind<MySimpleUsecaseInterface>(TYPES.MySimpleUsecaseInterface).to(MySimpleUsecase);
-  _appContainer.bind<SomeController>(TYPES.SomeController).to(SomeController).inSingletonScope();
+  _appContainer.bind<IUpdateBoardUsecase>(TYPES.UpdateBoardUsecase).to(UpdateBoardUsecase);
+  _appContainer.bind<GameController>(TYPES.GameController).to(GameController).inSingletonScope();
+
+  const cacheService = new CacheService();
+  _appContainer.bind<CacheService>(TYPES.CacheService).toConstantValue(cacheService);
 };
 
 const appContainer = () => {
@@ -25,8 +30,9 @@ const appContainer = () => {
   }
 
   return {
-    someController: _appContainer.get<SomeController>(TYPES.SomeController),
-    mySimpleUsecase: _appContainer.get<MySimpleUsecaseInterface>(TYPES.MySimpleUsecaseInterface),
+    gameController: _appContainer.get<GameController>(TYPES.GameController),
+    updateBoardUsecase: _appContainer.get<IUpdateBoardUsecase>(TYPES.UpdateBoardUsecase),
+    CacheService: _appContainer.get<ICacheService>(TYPES.CacheService)
   };
 };
 
