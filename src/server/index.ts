@@ -6,7 +6,6 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import cors from 'cors';
 
 import { IRoute } from '../routes/routes-i';
-
 import { logger } from '../utils/logger';
 
 export class Server {
