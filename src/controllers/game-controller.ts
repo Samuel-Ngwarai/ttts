@@ -12,7 +12,7 @@ export class GameController {
   private loggerPrefix = 'GameController';
   constructor() { }
 
-  public async playMove(req: Request, res: Response, next: NextFunction): Promise<any> {
+  public playMove(req: Request, res: Response, next: NextFunction): Promise<any> {
     logger.debug(`${this.loggerPrefix}:: playMove`);
     const { x, y, player } = req.body;
 

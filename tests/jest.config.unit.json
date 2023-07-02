@@ -20,6 +20,8 @@
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/utils/logger.ts",
+      "!src/main.ts",
+      "!src/server/index.ts",
       "!src/**/__tests__/**",
       "!src/config/**.ts",
       "!src/routes/**.ts",

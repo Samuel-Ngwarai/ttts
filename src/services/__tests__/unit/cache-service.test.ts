@@ -28,6 +28,18 @@ describe(__filename, () => {
     expect(cacheService['cache'].get(key)).toBe(undefined);
   });
 
+  it('should return true if cache has item with given key', () => {
+    cacheService['cache'].set(key, data);
+    expect(cacheService['cache'].get(key)).toBe(data);
+    expect(cacheService.has(key)).toBe(true);
+  });
+
+  it('should return false if cache does not have item with given key', () => {
+    cacheService['cache'].set(key, data);
+    expect(cacheService['cache'].get(key)).toBe(data);
+    expect(cacheService.has('wrong key')).toBe(false);
+  });
+
   it('should return true if store is empty', () => {
     cacheService['cache'].set(key, data);
     expect(cacheService.isEmpty()).toBe(false);

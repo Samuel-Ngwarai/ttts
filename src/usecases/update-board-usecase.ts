@@ -29,9 +29,10 @@ export class UpdateBoardUsecase implements IUpdateBoardUsecase {
     if (notOnDiagonals.indexOf(`${x}:${y}`) !== -1) return false;
 
     // forward diagonal
-    if (x === y && this.allEqual(board[0][0], board[1][1], board[2][2], letter)) return true;
+    if (this.allEqual(board[0][0], board[1][1], board[2][2], letter)) return true;
 
-    if ((x !== y || x === 1) && this.allEqual(board[2][0], board[1][1], board[0][2], letter)) return true;
+    // backwards diagonal
+    if (this.allEqual(board[0][2], board[1][1], board[2][0], letter)) return true;
 
     return false;
   }

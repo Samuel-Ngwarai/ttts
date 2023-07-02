@@ -1,4 +1,3 @@
-import NodeCache from 'node-cache';
 import { UpdateBoardUsecase } from '../../update-board-usecase';
 import { CacheService } from '../../../services/cache-service';
 
@@ -21,8 +20,10 @@ describe(__filename, () => {
       x    | y    | letter | board                                              | result
       ${0} | ${0} | ${'X'} | ${[['X', 'X', 'X'], ['', 'O', ''], ['', 'O', '']]} | ${true}
       ${0} | ${0} | ${'X'} | ${[['X', 'O', ''], ['', 'X', ''], ['', 'O', 'X']]} | ${true}
+      ${1} | ${1} | ${'X'} | ${[['O', '', 'X'], ['O', 'X', ''], ['X', '', '']]} | ${true}
       ${0} | ${0} | ${'X'} | ${[['X', 'O', ''], ['X', '', ''], ['X', 'O', '']]} | ${true}
       ${0} | ${0} | ${'X'} | ${[['X', 'O', 'X'], ['', 'O', ''], ['', 'X', '']]} | ${false}
+      ${1} | ${0} | ${'X'} | ${[['X', 'O', 'X'], ['', 'O', ''], ['', 'X', '']]} | ${false}
     `(
       'should return $result given last played position',
       async ({ x, y, letter, board, result }) => {
