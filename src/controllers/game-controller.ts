@@ -1,21 +1,56 @@
 import { injectable, inject } from 'inversify';
-import { Request, Response, NextFunction } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 
 import { logger } from '../utils/logger';
 import { TYPES } from '../containers/types';
 import { IUpdateBoardUsecase } from '../usecases/interfaces/IUpdate-board';
+import { CacheService } from '../services/cache-service';
+import { SessionData } from '../usecases/update-board-usecase';
 
 @injectable()
 export class GameController {
   @inject(TYPES.UpdateBoardUsecase) private _updateBoardUsecase: IUpdateBoardUsecase;
+  @inject(TYPES.CacheService) private _cacheService: CacheService;
+  private waitingPlayer = '';
 
   private loggerPrefix = 'GameController';
   constructor() { }
 
-  public playMove(req: Request, res: Response, next: NextFunction): Promise<any> {
-    logger.debug(`${this.loggerPrefix}:: playMove`);
-    const { x, y, player } = req.body;
+  public establishConnection(playerSocket: string) {
+    logger.debug(`${this.loggerPrefix}:: establishConnection`, { playerSocket });
+    if (!this.waitingPlayer) {
+      this.waitingPlayer = playerSocket;
+      return {
+        result: 'waiting for player B'
+      };
+    }
 
-    return this._updateBoardUsecase.execute({ session: player.session, x, y, playerIcon: player.icon });
+    const playerXSocketId = this.waitingPlayer;
+    const playerOSocketId = playerSocket;
+    this.waitingPlayer = '';
+
+    const sessionId = uuidv4();
+    this._cacheService.set<SessionData>(sessionId, {
+      board: [['', '', ''],['', '', ''],['', '', '']],
+      filledPositions: 0,
+      playerXSocketId,
+      playerOSocketId
+    });
+
+    logger.info(`${this.loggerPrefix}:: connecting player X and O with sockets`, { X: playerXSocketId, O: playerOSocketId });
+
+    return {
+      result: 'players connected',
+      playerXSocketId,
+      playerOSocketId,
+      sessionId,
+    };
+  }
+
+  public async playMove(request: { x: 0 | 1 | 2, y: 0 | 1 | 2, session: string, icon: 'X' | 'O'}): Promise<any> {
+    logger.debug(`${this.loggerPrefix}:: playMove`);
+    const { x, y, session, icon } = request;
+
+    return this._updateBoardUsecase.execute({ session, x, y, icon });
   }
 }

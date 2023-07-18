@@ -16,12 +16,12 @@ describe(__filename, () => {
 
   describe('GET', () => {
 
-    describe('/simple', () => {
-      it('/should return simple', async () => {
+    describe('/healthz', () => {
+      it('/should return successful response', async () => {
 
-        const res = await request(expressServer).get('/simple');
+        const res = await request(expressServer).get('/healthz');
 
-        expect(res.body).toBe(1);
+        expect(res.body).toStrictEqual({ healthy: true });
         expect(res.statusCode).toEqual(200);
       });
     });

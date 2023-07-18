@@ -74,7 +74,7 @@ describe(__filename, () => {
         session: 'someSessionId',
         x: 0,
         y: 0,
-        playerIcon: 'O'
+        icon: 'O'
       });
 
       expect(res).toStrictEqual({
@@ -90,7 +90,7 @@ describe(__filename, () => {
         session: 'someSessionId',
         x: 0,
         y: 0,
-        playerIcon: 'X'
+        icon: 'X'
       });
 
       expect(res).toStrictEqual({
@@ -116,7 +116,7 @@ describe(__filename, () => {
         session: 'someSessionId',
         x: 0,
         y: 0,
-        playerIcon: 'X'
+        icon: 'X'
       });
 
       expect(res).toStrictEqual({
@@ -143,7 +143,7 @@ describe(__filename, () => {
         session: 'someSessionId',
         x: 0,
         y: 0,
-        playerIcon: 'X'
+        icon: 'X'
       });
 
       expect(res).toStrictEqual({
@@ -169,7 +169,7 @@ describe(__filename, () => {
         session: 'someSessionId',
         x: 1,
         y: 1,
-        playerIcon: 'X'
+        icon: 'X'
       })).rejects.toThrowError(new Error('Position already filled'));
     });
   });

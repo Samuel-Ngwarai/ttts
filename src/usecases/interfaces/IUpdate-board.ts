@@ -9,6 +9,6 @@ export interface IUpdateBoardUsecase {
       session: string;
       x: 0 | 1 | 2;
       y: 0 | 1 | 2;
-      playerIcon: 'X' | 'O';
+      icon: 'X' | 'O';
     }): Promise<UpdateBoardResponse>;
 }
