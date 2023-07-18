@@ -18,23 +18,21 @@ export class Routes implements IRoute {
       res.json({ ready: true });
     });
 
-    app.get('/healthz', async (_: Request, res: Response) => {
-      res.json({ healthy: true });
-    });
-
     /**
      * @swagger
      *
-     * /simple:
+     * /healthz:
      *   get:
-     *     description: Do something simple
+     *     description: Get application health
      *     produces:
      *       - application/json
      *     responses:
      *       200:
      *         description: Successfull Response
      */
-    // app.get('/simple', gameController.doSomethingSimple.bind(gameController));
+    app.get('/healthz', async (_: Request, res: Response) => {
+      res.json({ healthy: true });
+    });
 
     app.get('*',function (_: Request, res: Response) {
       res.status(404).send('Uknown route called. Try "/simple" for example');

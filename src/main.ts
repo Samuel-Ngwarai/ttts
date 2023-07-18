@@ -14,9 +14,9 @@ export default class App {
   public constructor(private readonly listen: boolean) {}
 
   public async init(): Promise<void> {
+    await initializeAppContainer();
     this.server = new Server();
 
-    await initializeAppContainer();
     const routes = new Routes();
 
     this.server.addExtensions();

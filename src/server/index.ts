@@ -4,6 +4,9 @@ import config from 'config';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import cors from 'cors';
+import { createServer } from 'http';
+import { Server as  SocketServer } from 'socket.io';
+import { appContainer } from '../containers/inversify.config';
 
 import { IRoute } from '../routes/routes-i';
 import { logger } from '../utils/logger';
@@ -12,6 +15,8 @@ export class Server {
   private server: Express;
   private port: number = config.get('PORT');
   private createSwaggerFile: boolean= config.get('CREATE_SWAGGER_FILE');
+  private io: SocketServer;
+  private gameController = appContainer().gameController;
 
   public constructor() {
     this.server = express();
@@ -20,7 +25,14 @@ export class Server {
   public async init(listen: boolean): Promise<Express> {
     try {
       if (listen) {
-        await this.server.listen(this.port);
+        const httpServer = createServer(this.server);
+        this.io = new SocketServer(httpServer, {
+          cors: {
+            origin: '*'
+          }
+        });
+        this.addSocketMethods();
+        httpServer.listen(this.port);
       }
       logger.info('Server::init - Server running at:', {
         uri: `localhost:${this.port}`,
@@ -31,6 +43,45 @@ export class Server {
     }
 
     return this.server;
+  }
+
+  private addSocketMethods() {
+    this.io.on('connection', (socket) => {
+      console.log(socket.id); // ojIckSD2jqNzOqIrAGzL
+
+      socket.on('establish-connection', () => {
+        logger.info('Establishing connection for ', { socket: socket.id });
+        const { result, playerXSocketId, playerOSocketId, sessionId } = this.gameController.establishConnection(socket.id);
+
+        if (result === 'waiting for player B') {
+          logger.debug('waiting for player B at socket -> ', { socket: socket.id });
+          this.io.to(socket.id).emit('waiting-for-player-b', 'Please patiently wait for player B');
+          return;
+        }
+
+        logger.debug('initiating game for player A and B', { A: playerXSocketId, B: playerOSocketId });
+        this.io.to(playerXSocketId).emit('player-a', { sessionId });
+        this.io.to(playerOSocketId).emit('player-b', { sessionId });
+      });
+
+      socket.on('play', (args) => {
+        logger.info('play args', { ...args });
+
+        // this.io.to(playerXSocketId).emit('turn-inactive', { sessionId });
+        // this.io.to(playerOSocketId).emit('turn-active', { sessionId });
+      });
+
+      socket.on('disconnect', () => {
+        console.log('A user has disconnected.', { socker: socket.id });
+      });
+    });
+
+    this.io.engine.on('connection_error', (err) => {
+      console.log(err.req);      // the request object
+      console.log(err.code);     // the error code, for example 1
+      console.log(err.message);  // the error message, for example "Session ID unknown"
+      console.log(err.context);  // some additional error context
+    });
   }
 
   public addExtensions() {

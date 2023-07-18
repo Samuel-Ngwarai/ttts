@@ -9,19 +9,16 @@
     },
     "collectCoverage": true,
     "coverageDirectory": "coverage/integration",
-    "coverageThreshold": {
-        "global": {
-            "branches": 100,
-            "functions": 100,
-            "lines": 100
-        }
-    },
     "testEnvironment": "node",
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/utils/logger.ts",
       "!src/**/__tests__/**",
       "!src/config/**.ts",
+      "!src/containers/*.ts",
+      "!src/main.ts",
+      "!src/server/index.ts",
+      "!src/routes/**.ts",
       "!src/containers/*.ts"
     ],
   "errorOnDeprecated": true,

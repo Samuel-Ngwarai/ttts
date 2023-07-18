@@ -6,9 +6,11 @@ import { CacheService } from '../services/cache-service';
 
 type Board = ('X' | 'O' | '')[][];
 
-type SessionData = {
+export type SessionData = {
   board: Board,
-  filledPositions: number
+  filledPositions: number,
+  playerXSocketId?: string,
+  playerOSocketId?: string,
 }
 
 @injectable()
@@ -41,9 +43,9 @@ export class UpdateBoardUsecase implements IUpdateBoardUsecase {
     session: string;
     x: 0 | 1 | 2;
     y: 0 | 1 | 2;
-    playerIcon: 'X' | 'O';
+    icon: 'X' | 'O';
   }): Promise<UpdateBoardResponse> {
-    const { x, y, playerIcon, session } = input;
+    const { x, y, icon, session } = input;
     let board: Board;
     let filledPositions: number;
 
@@ -62,14 +64,14 @@ export class UpdateBoardUsecase implements IUpdateBoardUsecase {
 
     if (board[x][y] !== '') throw new Error('Position already filled');
 
-    board[x][y] = playerIcon;
+    board[x][y] = icon;
     filledPositions++;
 
-    if (this.checkForWin(x, y, playerIcon, board)) {
+    if (this.checkForWin(x, y, icon, board)) {
       this._cacheService.delete(session);
       return {
         result: 'win',
-        player: playerIcon,
+        player: icon,
       };
     }
 

@@ -32,7 +32,7 @@ const appContainer = () => {
   return {
     gameController: _appContainer.get<GameController>(TYPES.GameController),
     updateBoardUsecase: _appContainer.get<IUpdateBoardUsecase>(TYPES.UpdateBoardUsecase),
-    CacheService: _appContainer.get<ICacheService>(TYPES.CacheService)
+    cacheService: _appContainer.get<ICacheService>(TYPES.CacheService)
   };
 };
 
