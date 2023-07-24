@@ -47,9 +47,9 @@ export class GameController {
     };
   }
 
-  public async playMove(request: { x: 0 | 1 | 2, y: 0 | 1 | 2, session: string, icon: 'X' | 'O'}): Promise<any> {
-    logger.debug(`${this.loggerPrefix}:: playMove`);
+  public async playMove(request: { x: 0 | 1 | 2, y: 0 | 1 | 2, session: string, icon: 'X' | 'O'}) {
     const { x, y, session, icon } = request;
+    logger.debug(`${this.loggerPrefix}:: playMove`, { session });
 
     return this._updateBoardUsecase.execute({ session, x, y, icon });
   }

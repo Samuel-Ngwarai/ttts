@@ -55,9 +55,8 @@
   },
   "scripts": {
     "start": "node build/src/main.js",
-    "dev": "CREATE_SWAGGER_FILE=true LOG_LEVEL=debug npm start",
     "docker:up": "docker-compose build && docker-compose up",
-    "watch": "LOG_LEVEL=debug concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold\" \"tsc -w -p tsconfig.release.json\" \"nodemon build/src/main.js --delay 1\"",
+    "dev": "CREATE_SWAGGER_FILE=true LOG_LEVEL=debug concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold\" \"tsc -w -p tsconfig.release.json\" \"nodemon build/src/main.js --delay 1\"",
     "clean": "rimraf coverage build tmp",
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json",

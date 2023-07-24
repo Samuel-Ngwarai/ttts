@@ -15,7 +15,7 @@ describe(__filename, () => {
     };
     cacheService.set<{ data: string[] }>('key', data);
 
-    expect(cacheService.get('key')).toBe(data);
+    expect(cacheService.get('key')).toStrictEqual(data);
   });
 
 });

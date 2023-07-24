@@ -11,7 +11,7 @@ export class CacheService implements ICacheService {
   private loggerPrefix = 'CacheService';
   constructor() {
     logger.debug(`${this.loggerPrefix}::constructor`);
-    this.cache = new NodeCache();
+    this.cache = new NodeCache({ stdTTL: 1800 });
   }
 
   public set<T>(key: string, item: T) {

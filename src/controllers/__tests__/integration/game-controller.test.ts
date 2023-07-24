@@ -32,6 +32,8 @@ describe(__filename, () => {
     expect(res).toStrictEqual({
       player: 'X',
       result: 'win',
+      playerOSocketId: 'player2Socket',
+      playerXSocketId: 'player1Socket',
     });
   });
 
