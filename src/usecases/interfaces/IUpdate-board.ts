@@ -2,6 +2,8 @@
 export type UpdateBoardResponse = {
     result: 'win' | 'draw' | 'continue';
     player?: 'X' | 'O';
+    playerXSocketId: string,
+    playerOSocketId: string
   }
 
 export interface IUpdateBoardUsecase {

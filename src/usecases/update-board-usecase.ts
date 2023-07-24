@@ -3,24 +3,32 @@ import { inject, injectable } from 'inversify';
 import { IUpdateBoardUsecase, UpdateBoardResponse } from './interfaces/IUpdate-board';
 import { TYPES } from '../containers/types';
 import { CacheService } from '../services/cache-service';
+import { logger } from '../utils/logger';
 
 type Board = ('X' | 'O' | '')[][];
 
 export type SessionData = {
   board: Board,
   filledPositions: number,
-  playerXSocketId?: string,
-  playerOSocketId?: string,
+  playerXSocketId: string,
+  playerOSocketId: string,
 }
 
 @injectable()
 export class UpdateBoardUsecase implements IUpdateBoardUsecase {
   @inject(TYPES.CacheService) private _cacheService: CacheService;
 
+  /**
+   * Checks whether all arguments provided are identical strings
+   */
   private allEqual(first: string, second: string, third: string, letter: string) {
     return first === second && second === third && third === letter;
   }
 
+  /**
+   * Given a tic-tac-toe board and last filled in position and letter,
+   * checks what the current status of the board is
+   */
   private checkForWin(x: number, y: number, letter: string, board: string[][]) {
     // check horizontal and vertical
     if (this.allEqual(board[0][y], board[1][y], board[2][y], letter)
@@ -46,21 +54,9 @@ export class UpdateBoardUsecase implements IUpdateBoardUsecase {
     icon: 'X' | 'O';
   }): Promise<UpdateBoardResponse> {
     const { x, y, icon, session } = input;
-    let board: Board;
-    let filledPositions: number;
+    logger.debug('UpdateBoardUsecase::execute', { session, x, y, icon });
 
-    if (this._cacheService.has(session)) {
-      const storedData = this._cacheService.get<SessionData>(session);
-      board = storedData.board;
-      filledPositions = storedData.filledPositions;
-    } else {
-      board = [
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', '']
-      ];
-      filledPositions = 0;
-    }
+    let { board, filledPositions, playerXSocketId, playerOSocketId } = this._cacheService.get<SessionData>(session);
 
     if (board[x][y] !== '') throw new Error('Position already filled');
 
@@ -68,27 +64,41 @@ export class UpdateBoardUsecase implements IUpdateBoardUsecase {
     filledPositions++;
 
     if (this.checkForWin(x, y, icon, board)) {
+      logger.info(`UpdateBoardUsecase::execute, player ${icon} won!`, { session });
+      logger.info('UpdateBoardUsecase::execute cleaning up stored data for session', { session });
       this._cacheService.delete(session);
       return {
         result: 'win',
         player: icon,
+        playerOSocketId,
+        playerXSocketId
       };
     }
 
     if (filledPositions === 9) {
+      logger.info('UpdateBoardUsecase::execute, game drawn', { session });
+      logger.info('UpdateBoardUsecase::execute cleaning up stored data for session', { session });
       this._cacheService.delete(session);
       return {
-        result: 'draw'
+        result: 'draw',
+        player: icon,
+        playerOSocketId,
+        playerXSocketId
       };
     }
 
     this._cacheService.set<SessionData>(session, {
       board,
       filledPositions,
+      playerXSocketId,
+      playerOSocketId
     });
 
     return {
-      result: 'continue'
+      result: 'continue',
+      player: icon,
+      playerXSocketId,
+      playerOSocketId
     };
   }
 }

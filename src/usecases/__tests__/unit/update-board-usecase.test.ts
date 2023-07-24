@@ -66,7 +66,9 @@ describe(__filename, () => {
             ['', 'X', ''],
             ['', '', ''],
           ],
-          filledPositions: 1
+          filledPositions: 1,
+          playerXSocketId: 'playerx',
+          playerOSocketId: 'playero'
         };
       });
 
@@ -78,26 +80,19 @@ describe(__filename, () => {
       });
 
       expect(res).toStrictEqual({
-        result: 'continue'
+        result: 'continue',
+        playerXSocketId: 'playerx',
+        playerOSocketId: 'playero',
+        player: 'O'
       });
-      expect(updateBoardUsecase['_cacheService'].set).toBeCalledWith( 'someSessionId', { 'board': [['O', '', ''], ['', 'X', ''], ['', '', '']], 'filledPositions': 2 });
-    });
-
-    it('should create new board if it is the first move', async() => {
-      updateBoardUsecase['_cacheService'].has = jest.fn().mockImplementationOnce(() => false);
-
-      const res = await updateBoardUsecase.execute({
-        session: 'someSessionId',
-        x: 0,
-        y: 0,
-        icon: 'X'
-      });
-
-      expect(res).toStrictEqual({
-        result: 'continue'
-      });
-      expect(updateBoardUsecase['_cacheService'].get).not.toBeCalled();
-      expect(updateBoardUsecase['_cacheService'].set).toBeCalledWith( 'someSessionId', { 'board': [['X', '', ''], ['', '', ''], ['', '', '']], 'filledPositions': 1 });
+      expect(updateBoardUsecase['_cacheService'].set).toBeCalledWith(
+        'someSessionId',
+        {
+          board: [['O', '', ''], ['', 'X', ''], ['', '', '']],
+          filledPositions: 2,
+          playerXSocketId: 'playerx',
+          playerOSocketId: 'playero'
+        });
     });
 
     it('should return expected result in case of a win', async() => {
@@ -108,7 +103,9 @@ describe(__filename, () => {
             ['X', 'X', 'O'],
             ['', '', 'X'],
           ],
-          filledPositions: 6
+          filledPositions: 6,
+          playerXSocketId: 'playerx',
+          playerOSocketId: 'playero'
         };
       });
 
@@ -121,7 +118,9 @@ describe(__filename, () => {
 
       expect(res).toStrictEqual({
         result: 'win',
-        player: 'X'
+        player: 'X',
+        playerXSocketId: 'playerx',
+        playerOSocketId: 'playero'
       });
       expect(updateBoardUsecase['_cacheService'].set).not.toBeCalled();
       expect(updateBoardUsecase['_cacheService'].delete).toBeCalledWith('someSessionId');
@@ -135,7 +134,9 @@ describe(__filename, () => {
             ['X', 'O', 'O'],
             ['O', 'X', 'X'],
           ],
-          filledPositions: 8
+          filledPositions: 8,
+          playerXSocketId: 'playerx',
+          playerOSocketId: 'playero'
         };
       });
 
@@ -147,7 +148,11 @@ describe(__filename, () => {
       });
 
       expect(res).toStrictEqual({
-        result: 'draw'
+        result: 'draw',
+        playerXSocketId: 'playerx',
+        playerOSocketId: 'playero',
+        player: 'X'
+
       });
       expect(updateBoardUsecase['_cacheService'].set).not.toBeCalled();
       expect(updateBoardUsecase['_cacheService'].delete).toBeCalledWith('someSessionId');

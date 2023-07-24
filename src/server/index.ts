@@ -47,7 +47,6 @@ export class Server {
 
   private addSocketMethods() {
     this.io.on('connection', (socket) => {
-      console.log(socket.id); // ojIckSD2jqNzOqIrAGzL
 
       socket.on('establish-connection', () => {
         logger.info('Establishing connection for ', { socket: socket.id });
@@ -64,23 +63,48 @@ export class Server {
         this.io.to(playerOSocketId).emit('player-b', { sessionId });
       });
 
-      socket.on('play', (args) => {
-        logger.info('play args', { ...args });
+      socket.on('play', async (args) => {
+        logger.info('Server::addSocketMethods, play game with args', { ...args });
+        const { x, y, session, icon } = args;
 
-        // this.io.to(playerXSocketId).emit('turn-inactive', { sessionId });
-        // this.io.to(playerOSocketId).emit('turn-active', { sessionId });
+        try {
+          const { playerXSocketId, playerOSocketId, player, result } = await this.gameController.playMove({ x, y, session, icon });
+
+          const currPlayerSocketId = player === 'X' ? playerXSocketId : playerOSocketId;
+          const waitingPlayerSocketId = player === 'X' ? playerOSocketId : playerXSocketId;
+
+          logger.debug('Server::addSocketMethods,', { player, currPlayerSocketId, waitingPlayerSocketId });
+
+          if (result === 'continue') {
+            this.io.to(currPlayerSocketId).emit('waiting-for-other-player', { x, y });
+            this.io.to(waitingPlayerSocketId).emit('current-turn-to-play', { x, y });
+          } else if (result === 'draw') {
+            this.io.to(currPlayerSocketId).emit('end-draw', { x, y });
+            this.io.to(waitingPlayerSocketId).emit('end-draw', { x, y });
+          } else {
+            this.io.to(currPlayerSocketId).emit('end-win', { x, y });
+            this.io.to(waitingPlayerSocketId).emit('end-loss', { x, y });
+          }
+        } catch (error) {
+          logger.error('Server::addSocketMethods, Some error happened whilst playing', { error });
+
+          if (error.message === 'Position already filled') {
+            logger.error('Server::addSocketMethods, Current position already filled. Asking player to play again');
+            this.io.to(socket.id).emit('already-played-repeat');
+          }
+        }
       });
 
       socket.on('disconnect', () => {
-        console.log('A user has disconnected.', { socker: socket.id });
+        logger.error('Server::addSocketMethods, A user has disconnected.', { socker: socket.id });
       });
     });
 
     this.io.engine.on('connection_error', (err) => {
-      console.log(err.req);      // the request object
-      console.log(err.code);     // the error code, for example 1
-      console.log(err.message);  // the error message, for example "Session ID unknown"
-      console.log(err.context);  // some additional error context
+      logger.error(err.req);      // the request object
+      logger.error(err.code);     // the error code, for example 1
+      logger.error(err.message);  // the error message, for example "Session ID unknown"
+      logger.error(err.context);  // some additional error context
     });
   }
 
