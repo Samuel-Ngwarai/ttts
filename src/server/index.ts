@@ -74,17 +74,25 @@ export class Server {
           const waitingPlayerSocketId = player === 'X' ? playerOSocketId : playerXSocketId;
 
           logger.debug('Server::addSocketMethods,', { player, currPlayerSocketId, waitingPlayerSocketId });
+          let currPlayEvent = '', waitingPlayerEvent = '';
 
-          if (result === 'continue') {
-            this.io.to(currPlayerSocketId).emit('waiting-for-other-player', { x, y });
-            this.io.to(waitingPlayerSocketId).emit('current-turn-to-play', { x, y });
-          } else if (result === 'draw') {
-            this.io.to(currPlayerSocketId).emit('end-draw', { x, y });
-            this.io.to(waitingPlayerSocketId).emit('end-draw', { x, y });
-          } else {
-            this.io.to(currPlayerSocketId).emit('end-win', { x, y });
-            this.io.to(waitingPlayerSocketId).emit('end-loss', { x, y });
+          switch (result) {
+          case 'continue':
+            currPlayEvent = 'waiting-for-other-player';
+            waitingPlayerEvent = 'current-turn-to-play';
+            break;
+          case 'draw':
+            currPlayEvent = 'end-draw';
+            waitingPlayerEvent = 'end-draw';
+            break;
+          default:
+            currPlayEvent = 'end-win';
+            waitingPlayerEvent = 'end-loss';
+            break;
           }
+
+          this.io.to(currPlayerSocketId).emit(currPlayEvent, { x, y });
+          this.io.to(waitingPlayerSocketId).emit(waitingPlayerEvent, { x, y });
         } catch (error) {
           logger.error('Server::addSocketMethods, Some error happened whilst playing', { error });
 
@@ -101,10 +109,7 @@ export class Server {
     });
 
     this.io.engine.on('connection_error', (err) => {
-      logger.error(err.req);      // the request object
-      logger.error(err.code);     // the error code, for example 1
-      logger.error(err.message);  // the error message, for example "Session ID unknown"
-      logger.error(err.context);  // some additional error context
+      logger.error('Server::addSocketMethods, Some connection error happened', { err });
     });
   }
 

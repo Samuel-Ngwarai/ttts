@@ -11,23 +11,27 @@ import { SessionData } from '../usecases/update-board-usecase';
 export class GameController {
   @inject(TYPES.UpdateBoardUsecase) private _updateBoardUsecase: IUpdateBoardUsecase;
   @inject(TYPES.CacheService) private _cacheService: CacheService;
-  private waitingPlayer = '';
 
-  private loggerPrefix = 'GameController';
+  private logPrefix = 'GameController';
   constructor() { }
 
+  /**
+   * Establish connection between 2 players represented by different sockets.
+   */
   public establishConnection(playerSocket: string) {
-    logger.debug(`${this.loggerPrefix}:: establishConnection`, { playerSocket });
-    if (!this.waitingPlayer) {
-      this.waitingPlayer = playerSocket;
+    logger.debug(`${this.logPrefix}::establishConnection`, { playerSocket });
+    const waitingPlayerKey = 'waitingPlayer';
+    if (!this._cacheService.has(waitingPlayerKey)) {
+      const waitingTimeForOtherPlayer = 30;
+      this._cacheService.set<string>(waitingPlayerKey, playerSocket, waitingTimeForOtherPlayer);
       return {
         result: 'waiting for player B'
       };
     }
 
-    const playerXSocketId = this.waitingPlayer;
+    const playerXSocketId = this._cacheService.get<string>(waitingPlayerKey);
     const playerOSocketId = playerSocket;
-    this.waitingPlayer = '';
+    this._cacheService.delete(waitingPlayerKey);
 
     const sessionId = uuidv4();
     this._cacheService.set<SessionData>(sessionId, {
@@ -37,7 +41,7 @@ export class GameController {
       playerOSocketId
     });
 
-    logger.info(`${this.loggerPrefix}:: connecting player X and O with sockets`, { X: playerXSocketId, O: playerOSocketId });
+    logger.info(`${this.logPrefix}::establishConnection, connecting player X and O with sockets`, { X: playerXSocketId, O: playerOSocketId });
 
     return {
       result: 'players connected',
@@ -49,7 +53,7 @@ export class GameController {
 
   public async playMove(request: { x: 0 | 1 | 2, y: 0 | 1 | 2, session: string, icon: 'X' | 'O'}) {
     const { x, y, session, icon } = request;
-    logger.debug(`${this.loggerPrefix}:: playMove`, { session });
+    logger.debug(`${this.logPrefix}::playMove`, { session });
 
     return this._updateBoardUsecase.execute({ session, x, y, icon });
   }
