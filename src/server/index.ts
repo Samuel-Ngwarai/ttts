@@ -10,6 +10,7 @@ import { appContainer } from '../containers/inversify.config';
 
 import { IRoute } from '../routes/routes-i';
 import { logger } from '../utils/logger';
+import { SessionData } from '../usecases/update-board-usecase';
 
 export class Server {
   private server: Express;
@@ -17,6 +18,7 @@ export class Server {
   private createSwaggerFile: boolean= config.get('CREATE_SWAGGER_FILE');
   private io: SocketServer;
   private gameController = appContainer().gameController;
+  private cacheService = appContainer().cacheService;
 
   public constructor() {
     this.server = express();
@@ -46,6 +48,14 @@ export class Server {
   }
 
   private addSocketMethods() {
+    this.cacheService['cache'].on('expired', (key, value) => {
+      logger.info('Server::addSocketMethods, manually disconnecting player', { socketID: value });
+      if (key === 'waitingPlayer') {
+        this.io.to(value).emit('no-other-players-available');
+        this.io.to(value).disconnectSockets(true);
+      }
+    });
+
     this.io.on('connection', (socket) => {
 
       socket.on('establish-connection', () => {
@@ -73,7 +83,6 @@ export class Server {
           const currPlayerSocketId = player === 'X' ? playerXSocketId : playerOSocketId;
           const waitingPlayerSocketId = player === 'X' ? playerOSocketId : playerXSocketId;
 
-          logger.debug('Server::addSocketMethods,', { player, currPlayerSocketId, waitingPlayerSocketId });
           let currPlayEvent = '', waitingPlayerEvent = '';
 
           switch (result) {
@@ -93,6 +102,11 @@ export class Server {
 
           this.io.to(currPlayerSocketId).emit(currPlayEvent, { x, y });
           this.io.to(waitingPlayerSocketId).emit(waitingPlayerEvent, { x, y });
+
+          if (result !== 'continue') {
+            this.io.to(currPlayerSocketId).disconnectSockets(true);
+            this.io.to(waitingPlayerSocketId).disconnectSockets(true);
+          }
         } catch (error) {
           logger.error('Server::addSocketMethods, Some error happened whilst playing', { error });
 
@@ -103,8 +117,33 @@ export class Server {
         }
       });
 
+      socket.on('abort-connection', (connectionID) => {
+        logger.info('Server::addSocketMethods, A user has manually aborted the connection', { socket: socket.id });
+
+        if (this.cacheService.get<string>('waitingPlayer') === socket.id) {
+          logger.error('Server::addSocketMethods, Clearing currently waiting player from cache', { socket: socket.id });
+          this.cacheService.delete('waitingPlayer');
+          return;
+        }
+
+        if (connectionID) {
+          const { playerOSocketId, playerXSocketId } = this.cacheService.get<SessionData>(connectionID);
+
+          this.cacheService.delete(connectionID);
+
+          const otherPlayerSocketId = socket.id === playerXSocketId ? playerOSocketId : playerXSocketId;
+
+          this.io.to(otherPlayerSocketId).emit('other-player-aborted');
+        }
+      });
+
       socket.on('disconnect', () => {
-        logger.error('Server::addSocketMethods, A user has disconnected.', { socker: socket.id });
+        if (this.cacheService.get<string>('waitingPlayer') === socket.id) {
+          logger.error('Server::addSocketMethods, Clearing currently waiting player from cache', { socket: socket.id });
+          this.cacheService.delete('waitingPlayer');
+        }
+
+        logger.info('Server::addSocketMethods, A user has disconnected.', { socket: socket.id });
       });
     });
 
