@@ -1,5 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { v4 as uuidv4 } from 'uuid';
+import config from 'config';
 
 import { logger } from '../utils/logger';
 import { TYPES } from '../containers/types';
@@ -22,7 +23,7 @@ export class GameController {
     logger.debug(`${this.logPrefix}::establishConnection`, { playerSocket });
     const waitingPlayerKey = 'waitingPlayer';
     if (!this._cacheService.has(waitingPlayerKey)) {
-      const waitingTimeForOtherPlayer = 30;
+      const waitingTimeForOtherPlayer = config.get<number>('MAX_WAITING_TIME_FOR_PLAYER_2');
       this._cacheService.set<string>(waitingPlayerKey, playerSocket, waitingTimeForOtherPlayer);
       return {
         result: 'waiting for player B'

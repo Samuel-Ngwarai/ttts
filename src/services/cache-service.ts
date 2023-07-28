@@ -13,13 +13,14 @@ export class CacheService implements ICacheService {
   private loggerPrefix = 'CacheService';
   constructor() {
     logger.debug(`${this.loggerPrefix}::constructor`);
-    this.cache = new NodeCache();
+    this.cache = new NodeCache({ checkperiod: 1 });
   }
 
   public set<T>(key: string, item: T, ttl: number = this.cacheStdTtl) {
     logger.debug(`${this.loggerPrefix}::add, adding item with details`, {
       key,
-      item
+      item,
+      ttl
     });
     this.cache.set(key, item, ttl);
   }
