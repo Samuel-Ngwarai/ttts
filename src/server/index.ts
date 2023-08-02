@@ -7,6 +7,7 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server as  SocketServer } from 'socket.io';
 import { appContainer } from '../containers/inversify.config';
+import * as Sentry from '@sentry/node';
 
 import { IRoute } from '../routes/routes-i';
 import { logger } from '../utils/logger';
@@ -22,6 +23,20 @@ export class Server {
 
   public constructor() {
     this.server = express();
+
+    Sentry.init({
+      dsn: config.get('SENTRY_DSN'),
+      environment: config.get('ENVIRONMENT'),
+      integrations: [
+        new Sentry.Integrations.Http({
+          tracing: true
+        }),
+        new Sentry.Integrations.Express({
+          app: this.server
+        }),
+      ],
+      tracesSampleRate: config.get('SENTRY_TRACES_SAMPLE_RATE'),
+    });
   }
 
   public async init(listen: boolean): Promise<Express> {
@@ -153,6 +168,10 @@ export class Server {
   }
 
   public addExtensions() {
+    // Trace incoming requests
+    this.server.use(Sentry.Handlers.requestHandler());
+    this.server.use(Sentry.Handlers.tracingHandler());
+
     this.server.use(bodyparser.json());
     this.server.use(cors());
   }
@@ -162,6 +181,8 @@ export class Server {
   }
 
   public addErrorHandler() {
+    this.server.use(Sentry.Handlers.errorHandler());
+
     this.server.use((err: any, req: Request, res: Response, _: NextFunction) => {
       logger.error(err);
 

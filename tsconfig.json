@@ -9,6 +9,7 @@
     "jsx": "react",
     "alwaysStrict": true,
     "sourceMap": true,
+    "inlineSources": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
@@ -22,7 +23,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "types": ["reflect-metadata", "jest"],
-    "lib": ["ES6"]
+    "lib": ["ES6"],
+    "sourceRoot": "/"
   },
   "include": [
     "src/**/*",
