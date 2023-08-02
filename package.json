@@ -66,7 +66,7 @@
     "test:unit": "NODE_CONFIG_DIR=$(pwd)/src/config jest --config=tests/jest.config.unit.json",
     "test:int": "NODE_CONFIG_DIR=$(pwd)/src/config jest --config=tests/jest.config.integration.json",
     "test:watch": "npm run test:unit -- --watch",
-    "sentry:sourcemaps": "sentry-cli login --auth-token SENTRY_AUTH_TOKEN && sentry-cli sourcemaps inject --org inspired-projects --project ttts ./build && sentry-cli sourcemaps upload --org inspired-projects --project ttts ./build",
+    "sentry:sourcemaps": "./scripts/sentry-cli-login.sh && sentry-cli sourcemaps inject --org inspired-projects --project ttts ./build && sentry-cli sourcemaps upload --org inspired-projects --project ttts ./build",
     "build": "tsc -p tsconfig.release.json && npm run sentry:sourcemaps"
   },
   "author": "Samuel Ngwarai",
