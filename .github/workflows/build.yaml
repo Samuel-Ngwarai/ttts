@@ -9,11 +9,13 @@ on:
 jobs:
   build:
 
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Echo sentry token
-        run: echo "This is the env var ${{ env.SENTRY_AUTH_TOKEN }} .!"
+        run: echo "This is the env var $SENTRY_AUTH_TOKEN .!"
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v4.1.1
