@@ -6,6 +6,9 @@ ENV PORT=${PORT}
 
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
+RUN echo $PORT
+RUN echo $SENTRY_AUTH_TOKEN
+
 COPY package*.json ./
 
 COPY . .
