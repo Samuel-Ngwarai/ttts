@@ -19,6 +19,3 @@ jobs:
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v4.1.1
-        with:
-          secrets: |
-            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
