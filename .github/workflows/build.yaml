@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  SENTRY_AUTH_TOKEN: $SENTRY_AUTH_TOKEN
-
 jobs:
   build:
 
@@ -16,7 +13,7 @@ jobs:
 
     steps:
       - name: Echo sentry token
-        run: echo "This is the env var $SENTRY_AUTH_TOKEN.!"
+        run: echo "This is the env var $SENTRY_AUTH_TOKEN .!"
 
       - name: Build and push Docker images
         uses: docker/build-push-action@v4.1.1
