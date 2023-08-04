@@ -22,3 +22,4 @@ jobs:
         with:
           build-args: |
             SENTRY_AUTH_TOKEN=498ec3f6e70c8da6dcc406c2e1001234a50f03d32f3b942bc50ee77f6732bd5d
+            ENV_TEST=frombuildyaml
