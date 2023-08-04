@@ -4,3 +4,5 @@ build
 .DS_Store
 # Sentry Auth Token
 .sentryclirc
+
+.env

@@ -7,10 +7,12 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  tests:
 
     runs-on: ubuntu-latest
 
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     strategy:
       matrix:
         node-version: [18.x, 20.x]

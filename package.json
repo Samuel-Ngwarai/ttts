@@ -12,6 +12,7 @@
     "@sentry/node": "^7.61.0",
     "@types/config": "^3.3.0",
     "@types/express": "^4.17.17",
+    "@sentry/cli": "^2.20.3",
     "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "config": "^3.3.9",
@@ -30,7 +31,6 @@
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.3",
-    "@types/socket.io": "^3.0.2",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.59.1",
     "concurrently": "^8.0.1",
@@ -66,8 +66,10 @@
     "test:unit": "NODE_CONFIG_DIR=$(pwd)/src/config jest --config=tests/jest.config.unit.json",
     "test:int": "NODE_CONFIG_DIR=$(pwd)/src/config jest --config=tests/jest.config.integration.json",
     "test:watch": "npm run test:unit -- --watch",
+    "sentry:login": "./scripts/sentry-cli-login.sh",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org inspired-projects --project ttts ./build && sentry-cli sourcemaps upload --org inspired-projects --project ttts ./build",
-    "build": "tsc -p tsconfig.release.json && npm run sentry:sourcemaps"
+    "build": "tsc -p tsconfig.release.json && npm run sentry:login && npm run sentry:sourcemaps",
+    "build:local": "tsc -p tsconfig.release.json && npm run sentry:sourcemaps"
   },
   "author": "Samuel Ngwarai",
   "license": "Apache-2.0"

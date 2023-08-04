@@ -4,6 +4,9 @@ WORKDIR /usr/src/app
 ARG PORT=3001
 ENV PORT=${PORT}
 
+ARG SENTRY_AUTH_TOKEN=sentryAuthToken
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+
 COPY package*.json ./
 
 COPY . .
