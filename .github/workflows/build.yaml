@@ -21,5 +21,5 @@ jobs:
         uses: docker/build-push-action@v4.1.1
         with:
           build-args: |
-            SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             ENV_TEST=frombuildyaml
