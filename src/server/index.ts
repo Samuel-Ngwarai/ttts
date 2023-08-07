@@ -78,7 +78,7 @@ export class Server {
         const { result, playerXSocketId, playerOSocketId, sessionId } = this.gameController.establishConnection(socket.id);
 
         if (result === 'waiting for player B') {
-          logger.debug('waiting for player B at socket -> ', { socket: socket.id });
+          logger.debug('waiting for player B at socket', { socket: socket.id });
           this.io.to(socket.id).emit('waiting-for-player-b', 'Please patiently wait for player B');
           return;
         }
@@ -141,7 +141,7 @@ export class Server {
           return;
         }
 
-        if (connectionID) {
+        if (connectionID && this.cacheService.has(connectionID)) {
           const { playerOSocketId, playerXSocketId } = this.cacheService.get<SessionData>(connectionID);
 
           this.cacheService.delete(connectionID);
