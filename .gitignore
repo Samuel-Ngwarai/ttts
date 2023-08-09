@@ -6,3 +6,5 @@ build
 .sentryclirc
 
 .env
+
+newrelic_agent.log
