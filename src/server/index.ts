@@ -72,20 +72,19 @@ export class Server {
     });
 
     this.io.on('connection', (socket) => {
-
       socket.on('establish-connection', () => {
         logger.info('Establishing connection for ', { socket: socket.id });
         const { result, playerXSocketId, playerOSocketId, sessionId } = this.gameController.establishConnection(socket.id);
 
         if (result === 'waiting for player B') {
           logger.debug('waiting for player B at socket', { socket: socket.id });
-          this.io.to(socket.id).emit('waiting-for-player-b', 'Please patiently wait for player B');
+          this.io.to(socket.id).emit('waiting-for-player-b-connection', 'Please patiently wait for player B');
           return;
         }
 
         logger.debug('initiating game for player A and B', { A: playerXSocketId, B: playerOSocketId });
-        this.io.to(playerXSocketId).emit('player-a', { sessionId });
-        this.io.to(playerOSocketId).emit('player-b', { sessionId });
+        this.io.to(playerXSocketId).emit('player-x', { sessionId });
+        this.io.to(playerOSocketId).emit('player-o', { sessionId });
       });
 
       socket.on('play', async (args) => {
